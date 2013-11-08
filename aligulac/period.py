@@ -28,6 +28,7 @@ from rating import (
 )
 
 from ratings.models import (
+    Cluster,
     Match,
     P,
     Period,
@@ -100,6 +101,16 @@ for m in Match.objects.filter(period=period).select_related('pla','plb'):
     rca = [m.rca] if m.rca in 'PTZ' else 'PTZ'
     rcb = [m.rcb] if m.rcb in 'PTZ' else 'PTZ'
     weight = 1/len(rca)/len(rcb) * (OFFLINE_WEIGHT if m.offline else 1)
+    
+    try:
+        cla = Cluster.objects.get(period=period, player=m.pla).cluster
+        clb = Cluster.objects.get(period=period, player=m.plb).cluster
+
+        if cla >= 0 and clb >= 0:
+            if cla != clb:
+                weight *= 3
+    except Exception as e:
+        print(e, file=sys.stderr)
 
     for ra in rca:
         for rb in rcb:

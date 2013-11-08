@@ -1324,3 +1324,14 @@ class BalanceEntry(models.Model):
     t_gains = models.FloatField('T gains', null=False)
     z_gains = models.FloatField('Z gains', null=False)
 # }}}
+
+# {{{ Cluster
+class Cluster(models.Model):
+    class Meta:
+        db_table = 'cluster'
+    
+    period = models.ForeignKey(Period, null=False)
+    player = models.ForeignKey(Player, null=False)
+    cluster = models.IntegerField("Cluster", null=False)
+    distance = models.IntegerField("Dist", null=True)
+# }}}

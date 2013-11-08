@@ -32,6 +32,7 @@ latest = Period.objects.filter(start__lte=date.today()).latest('id')
 print('[%s] Recomputing periods %i through %i' % (str(datetime.now()), earliest.id, latest.id), flush=True)
 
 for i in range(earliest.id, latest.id+1):
+    os.system(PROJECT_PATH + 'clustering.py %i' % i)
     os.system(PROJECT_PATH + 'period.py %i' % i)
 
 if not 'debug' in sys.argv:

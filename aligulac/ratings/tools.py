@@ -7,6 +7,17 @@ from numpy import (
 from math import sqrt
 from datetime import date
 from decimal import Decimal
+from pyparsing import (
+    alphas,
+    nums,
+    Forward,
+    Group,
+    Literal,
+    Suppress,
+    ZeroOrMore, 
+    White, 
+    Word
+)
 import shlex
 
 from django.db.models import (
@@ -410,3 +421,25 @@ def display_matches(matches, date=True, fix_left=None, ratings=False, messages=T
     return ret
 # }}}
 
+def parse_event_subtree(string):
+    LPAR, RPAR = map(Suppress, "()")
+    WHITE = Suppress(White())
+
+    type = Literal("e") | Literal("r") | Literal("c")
+    
+    tree = Forward()
+    treelist = Group(
+        LPAR + 
+        ZeroOrMore(tree) + 
+        RPAR
+    )
+    info = (
+        type + 
+        WHITE + 
+        Word(alphas+nums)
+    )
+    tree <<= ( 
+        info | treelist
+    )
+    
+    return tree.parseString(string).asList()

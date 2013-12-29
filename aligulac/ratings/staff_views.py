@@ -2,6 +2,7 @@
 from datetime import date, timedelta
 import shlex
 import simplejson
+import yaml
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -33,6 +34,7 @@ from ratings.models import (
     Event,
     EventAdjacency,
     EVENT_TYPES,
+    EVENT_TYPES_SHORT_MAP,
     GAMES,
     GroupMembership,
     HOTS,
@@ -48,6 +50,7 @@ from ratings.models import (
 from ratings.tools import (
     display_matches,
     find_player,
+    parse_event_subtree
 )
 # }}}
 
@@ -515,11 +518,13 @@ class AddEventsForm(forms.Form):
         ('Round 1,Round 2,Round 3,Round 4', 'LB: Round 1->Round 4'),
         ('Round 1,Round 2,Round 3,Round 4,Round 5,Round 6', 'LB: Round 1->Round 6'),
         ('Round 1,Round 2,Round 3,Round 4,Round 5,Round 6,Round 7,Round 8', 'LB: Round 1->Round 8'),
-    ], required=True, label='Predefined names')
-    custom_names = StrippedCharField(max_length=400, required=False, label='Custom names')
-    type = forms.ChoiceField(choices=EVENT_TYPES, required=True, label='Type')
+    ], required=False, label='Predefined names')
+
+    subtree = forms.CharField(label='Subtree', required=False, widget=forms.Textarea)
     big = forms.BooleanField(required=False, label='Big', initial=False)
     noprint = forms.BooleanField(required=False, label='No print', initial=False)
+
+#    action = "add"
 
     # {{{ Constructor
     def __init__(self, request=None):
@@ -550,22 +555,24 @@ class AddEventsForm(forms.Form):
                 raise ValidationError('Must specify an event to close.')
             return self.cleaned_data
 
-        if self.cleaned_data['predef_names'] == 'other' and self.cleaned_data['custom_names'] in ['', None]:
-            raise ValidationError('No event names specified.')
-
-        names = (
-            self.cleaned_data['predef_names']
-            if self.cleaned_data['predef_names'] != 'other'
-            else self.cleaned_data['custom_names']
-        )
-
-        self.cleaned_data['names'] = [s.strip() for s in names.split(',') if s.strip() != '']
+            
+        # try:
+        #     data = parse_event_subtree(self.cleaned_data['subtree'])
+        # except:
+        #     raise ValidationError('Invalid subtree.')
+        data = parse_event_subtree(self.cleaned_data['subtree'])
+        if len(data) == 1:
+            data = data[0]
+        self.cleaned_data['subtree'] = data
+        print(data)
         return self.cleaned_data
     # }}}
 
     # {{{ Commit changes
     def commit(self):
         ret = []
+
+        print("IN COMMIT")
 
         if not self.is_valid():
             ret.append(Message('Entered data was invalid, no changes made.', type=Message.ERROR))
@@ -578,21 +585,31 @@ class AddEventsForm(forms.Form):
             return ret
 
         if self.action == 'add':
-            adder = (
-                self.cleaned_data['parent_id'].add_child
-                if self.cleaned_data['parent_id'] is not None else
-                Event.add_root
-            )
-            for name in self.cleaned_data['names']:
-                adder(
-                    name=name, 
-                    type=self.cleaned_data['type'],
-                    big=self.cleaned_data['big'],
-                    noprint=self.cleaned_data['noprint'],
-                )
+            def add_subevent(parent, **kwargs):
+                return parent.add_child(**kwargs)
+            add_root = Event.add_root
+            
+            numadded = [0]
+
+            def recursive_add(parent, node):
+                type = EVENT_TYPES_SHORT_MAP[node[0]]
+                name = node[1]
+                if parent is not None:
+                    child = add_subevent(parent, name=name, type=type)
+                else:
+                    child = add_root(name=name, type=type)
+
+                numadded[0] += 1
+
+                if len(node) >= 2:
+                    for subnode in node[2:]:
+                        recursive_add(child, subnode)
+
+            recursive_add(self.cleaned_data['parent_id'], self.cleaned_data['subtree'])
+
             ret.append(
-                Message('Successfully created %i new events.' % len(self.cleaned_data['names']),
-                type=Message.SUCCESS)
+                Message('Successfully created %i new events.' % numadded[0],
+                        type=Message.SUCCESS)
             )
         elif self.action == 'close':
             self.cleaned_data['parent_id'].close()

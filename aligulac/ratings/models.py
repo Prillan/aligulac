@@ -63,6 +63,11 @@ EVENT_TYPES = [
     (TYPE_EVENT,    'Event'),
     (TYPE_ROUND,    'Round'),
 ]
+EVENT_TYPES_SHORT_MAP = {
+    "e": TYPE_EVENT,
+    "c": TYPE_CATEGORY,
+    "r": TYPE_ROUND
+}
 
 P, T, Z, R, S = 'PTZRS'
 RACES = [

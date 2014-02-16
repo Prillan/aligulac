@@ -126,6 +126,9 @@ urlpatterns = patterns('',
     url(r'^api/', include(beta_api.urls)),
     url(r'^api/', include(v1_api.urls)),
 
+    # Live
+    url(r'^live/', include('live.urls')),
+
     # Ask TheBB if questions
     url(r'^misc/training/(?P<team_id>\d+)(-[^ /]*)?/$', 'ratings.misc_views.training'),
 )

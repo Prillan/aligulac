@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+
+{% comment %}
+This template shows a rating list for a given period.
+{% endcomment %}
+
+{% load ratings_extras %}
+
+{% block title %}List {{ period.id }}{% endblock %}
+
+{% block content %}
+
+{% include "messages.html" %}
+
+LIVE PAGE!
+
+
+{% for s in stats %}
+{% ifchanged %}<h3>{{ s.tournament.host.name }} - {{ s.tournament.name }}</h3>{% endifchanged %}
+
+<ul>
+  <li>{{ s.pla }}
+  <li>{{ s.plb }}
+  <li>{{ s.sca }}
+  <li>{{ s.scb }}
+</ul>
+
+{% endfor %}
+
+{% endblock %}

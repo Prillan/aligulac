@@ -12,13 +12,11 @@ This template shows a rating list for a given period.
 
 {% include "messages.html" %}
 
-<script src="{{ "live"|js }}"></script>
+<script src='{{ "live"|js }}'></script>
 
-<div id="live_content" data-game-id="{{ game.id }}">
+<div id="live_content" data-game-id='{{ game.id }}'>
   Loading...
 </div>
-
-<h2>Game {{ game.game_id }} between {{ game.match.pla.tag }} and {{ game.match.plb.tag }}</h2>
 
 <table>
 <thead>

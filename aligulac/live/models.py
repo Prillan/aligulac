@@ -19,7 +19,7 @@ class Tournament(models.Model):
 
     running = models.BooleanField("IsRunning", default=False)
 
-    host = models.ForeignKey(TournamentHost, related_name="tournament")
+    host = models.ForeignKey(TournamentHost)
 
     def __str__(self):
         return self.name
@@ -42,7 +42,13 @@ class Match(models.Model):
     sca = models.IntegerField()
     scb = models.IntegerField()
 
-    tournament = models.ForeignKey(Tournament, related_name="match")
+    tournament = models.ForeignKey(Tournament)
+
+    def __repr__(self):
+        return "{}-{} {}-{}".format(self.pla, self.plb, self.sca, self.scb)
+
+    def __str__(self):
+        return repr(self)
 
     def to_dict(self):
         return {
@@ -62,7 +68,9 @@ class Game(models.Model):
 
     map = models.CharField("Map", max_length=64)
 
-    match = models.ForeignKey("Match", related_name="game")
+    match = models.ForeignKey("Match")
+
+    is_live = models.BooleanField("IsLive", default=False)
 
     class Meta:
         unique_together = ["game_index", "match"]
@@ -135,7 +143,7 @@ def generate_live_stat_model():
     fields = dict()
 
     fields.update({
-        "game": models.ForeignKey(Game, related_name="stat"),
+        "game": models.ForeignKey(Game),
         "player_index": models.IntegerField("PlayerIndex")
     })
 

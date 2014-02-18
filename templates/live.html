@@ -1,29 +1,50 @@
 {% extends "index.html" %}
 
-{% comment %}
-This template shows a rating list for a given period.
-{% endcomment %}
-
 {% load ratings_extras %}
 
-{% block title %}List {{ period.id }}{% endblock %}
+{% block title %}LIVE! Aligulac{% endblock %}
 
 {% block content %}
 
 {% include "messages.html" %}
 
-LIVE PAGE!
+<h3>Live Tournaments</h3>
 
+{% for t in running %}
+{% ifchanged %}
+<div class="host">
+  {{ t.host.name }}
+{% endifchanged %}
 
-{% for s in stats %}
-{% ifchanged %}<h3>{{ s.tournament.host.name }} - {{ s.tournament.name }}</h3>{% endifchanged %}
+<div class="tournament">
+  <div class="title">
+    {{ t.name }}
+  </div>
+  <div>
+    {% for match in t.match_set.all %}
+    <div class="match">
+      {{ match }}
+      <div>
+        {% for game in match.game_set.all %}
+        <div class="game {% if game.is_live %}live{% endif %}">
+          <a href="game/?id={{ game.id }}">
+            Game {{ game.game_index }}
+            {% if game.is_live %}
+            <span class="live-now">LIVE</span>
+            {% endif %}
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 
-<ul>
-  <li>{{ s.pla }}
-  <li>{{ s.plb }}
-  <li>{{ s.sca }}
-  <li>{{ s.scb }}
-</ul>
+{% ifchanged %}
+<!-- END {{ t.host.name }} -->
+</div>
+{% endifchanged %}
 
 {% endfor %}
 

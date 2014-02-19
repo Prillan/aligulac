@@ -152,11 +152,14 @@ def live_game_json(request):
     game = get_object_or_404(Game, id=request.GET["id"])
 
     stats = LiveStat.objects.filter(game=game).order_by("game_time", "player_index")
-    
     stats = [(x.to_json(), y.to_json()) for (x, y) in 
              join_stats_by_update(stats, skip_singles=True)]
 
     if "latest" in request.GET and len(stats) > 0:
         stats = [stats[-1]]
 
-    return JsonResponse(stats)
+    return JsonResponse({
+        "stats": stats, 
+        "pla": { "id": game.match.pla_id, "tag": game.match.pla.tag },
+        "plb": { "id": game.match.plb_id, "tag": game.match.plb.tag }
+    })

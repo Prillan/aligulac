@@ -8,17 +8,29 @@
 
 {% include "messages.html" %}
 
+Welcome to the new live statistics site.
+
 <h3>Live Tournaments</h3>
 
 {% for t in running %}
 {% ifchanged %}
+<!-- START {{ t.host.name }} -->
 <div class="host">
+<div class="title">
   {{ t.host.name }}
+</div>
+<br />
 {% endifchanged %}
 
 <div class="tournament">
   <div class="title">
     {{ t.name }}
+    {% if t.event %}
+    - 
+    <a href="/results/events/{{ t.event.id }}-{{ t.event.fullname|urlfilter }}">
+      View Results
+    </a>
+    {% endif %}
   </div>
   <div>
     {% for match in t.match_set.all %}
@@ -40,7 +52,6 @@
     {% endfor %}
   </div>
 </div>
-
 {% ifchanged %}
 <!-- END {{ t.host.name }} -->
 </div>

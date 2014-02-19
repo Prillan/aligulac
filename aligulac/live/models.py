@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db import models
-from ratings.models import Player
+
+from ratings.models import Event, Player
 
 KEY_TYPES = (
     ("m", "master"), 
@@ -20,6 +21,8 @@ class Tournament(models.Model):
     running = models.BooleanField("IsRunning", default=False)
 
     host = models.ForeignKey(TournamentHost)
+
+    event = models.ForeignKey(Event, null=True, default=None)
 
     def __str__(self):
         return self.name
@@ -60,7 +63,7 @@ class Match(models.Model):
             "scb": self.scb,
             "id": self.id,
             "tournament_id": self.tournament_id
-        }
+        }        
 
 class Game(models.Model):
     

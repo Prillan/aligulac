@@ -16,6 +16,9 @@ Changes here will mostly be visible on the entire site.
         <title>{% block title %}Aligulac{% endblock %}</title>
         <link href="{{ "base"|css }}" rel="stylesheet" type="text/css"/>
         <link href="{{ "datepicker"|css }}" rel="stylesheet" type="text/css"/>
+        {% if live %}
+        <link href="{{ "live"|css }}" rel="stylesheet" type="text/css"/>
+        {% endif %}
         <script type="text/javascript" src="{{ "general"|js }}"></script>
         <script type="text/javascript" src="{{ "datepicker"|js }}" /></script>
         <script type="text/javascript" src="{{ "jquery-1.10.2.min"|js }}"></script>
@@ -23,6 +26,13 @@ Changes here will mostly be visible on the entire site.
         {% if charts %}
             <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
             <script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
+        {% endif %}
+        {% if live %}
+	{% if debug %}
+        <script src='{{ "live"|js }}'></script>
+	{% else %}
+        <script src='{{ "live.min"|js }}'></script>
+	{% endif %}
         {% endif %}
         {% if curpage == "Predict" %}
             <script type="text/javascript" src="{{ "lp-bracket-parser"|js }}" ></script>

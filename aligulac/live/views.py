@@ -22,6 +22,7 @@ import re
 
 def live_home(request):
     ctx = base_ctx("Live", "LIVE!", request)
+    ctx["live"] = True
     
     running = Tournament.objects.filter(running=True).order_by("host__name")
 
@@ -33,6 +34,7 @@ def live_home(request):
 # Static display of all live data
 def live_game(request):
     ctx = base_ctx("Live", "LIVE!", request)
+    ctx["live"] = True
 
     game = get_object_or_404(Game, id=request.GET["id"])
 

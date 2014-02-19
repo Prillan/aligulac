@@ -6,35 +6,18 @@ This template shows a rating list for a given period.
 
 {% load ratings_extras %}
 
-{% block title %}List {{ period.id }}{% endblock %}
+{% block title %}Live {{ game.match }}{% endblock %}
 
 {% block content %}
 
 {% include "messages.html" %}
 
-<script src='{{ "live"|js }}'></script>
+<script>
+  $(document).ready(load_live_content);
+</script>
 
 <div id="live_content" data-game-id='{{ game.id }}'>
   Loading...
 </div>
 
-<table>
-<thead>
-<tr>
-  <th>Time</th><th>Player</th><th>Supply</th>
-  <th>Supply</th><th>Player</th>
-</tr>
-</thead>
-<tbody>
-  {% for a, b in stats %}
-  <tr>
-    <td>{{ a.game_time }}</td>
-    <td>{{ a.player_index }}</td>
-    <td>{{ a.supply_current }}/{{ a.supply_cap }}</td>
-    <td>{{ b.supply_current }}/{{ b.supply_cap }}</td>
-    <td>{{ b.player_index }}</td>
-  </tr>
-  {% endfor %}
-</tbody>
-</table>
 {% endblock %}

@@ -1071,7 +1071,6 @@ class ClusterConnection(models.Model):
         return "{}  <-->  {}".format(self.cluster, self.player)
 
 def start_rating(player, period):
-    print("Start rating for {} P:{}".format(player, period))
     try:
         cluster = Cluster.objects.get(
             period=period,

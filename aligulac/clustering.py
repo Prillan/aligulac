@@ -75,7 +75,8 @@ for m in q:
     )
 
 print('[%s] Writing file' % str(datetime.now()))
-with open('/tmp/clusters.abc', 'w') as f:
+filename = "/tmp/clusters_{}".format(pid)
+with open(filename + ".abc", 'w') as f:
     for (pla, plb), value in match_matrix.items():
         f.write('%i %i %f\n' % (pla, plb, value))
 
@@ -83,12 +84,12 @@ print('[%s] Markov clustering' % str(datetime.now()))
 
 with open(os.devnull, 'wb') as devnull:
     subprocess.check_call([
-        'mcl', '/tmp/clusters.abc', '--abc', '-I', '2.3', '-o', '/tmp/clusters.out'
+        'mcl', filename + ".abc", '--abc', '-I', '1.55', '-o', filename + ".out"
     ], stdout=devnull, stderr=subprocess.STDOUT)
 
 clusters = dict()
 cluster_index_set = set()
-with open('/tmp/clusters.out') as f:
+with open(filename + ".out") as f:
     lines = f.readlines()
     cluster = 1
     for line in lines:

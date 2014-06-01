@@ -27,6 +27,8 @@ from rating import (
 )
 
 from ratings.models import (
+    Cluster,
+    ClusterConnection,
     Match,
     P,
     Period,
@@ -99,11 +101,23 @@ for p in players.values():
 
 # {{{ Collect match information
 ngames = 0
+clusters = dict()
+def get_cluster(player):
+    if player.id not in clusters:
+        con = ClusterConnection.objects.get(
+            player=player,
+            cluster__period=period
+        )
+        clusters[player.id] = con.cluster
+        return con.cluster
+    return clusters[player.id]
 
 for m in Match.objects.filter(period=period).select_related('pla','plb'):
     rca = [m.rca] if m.rca in 'PTZ' else 'PTZ'
     rcb = [m.rcb] if m.rcb in 'PTZ' else 'PTZ'
-    weight = 1/len(rca)/len(rcb) * (OFFLINE_WEIGHT if m.offline else 1)
+    cluster_a = get_cluster(m.pla)
+    cluster_b = get_cluster(m.plb)
+    weight = 1/len(rca)/len(rcb) * (OFFLINE_WEIGHT if m.offline else 1) * (1.5 if cluster_a.index != cluster_b.index else 1)
 
     for ra in rca:
         for rb in rcb:

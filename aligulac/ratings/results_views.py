@@ -1,4 +1,5 @@
 # {{{ Imports
+from collections import Counter
 from datetime import (
     datetime,
     date,
@@ -1060,6 +1061,52 @@ def events(request, event_id=None):
 
     return render_to_response('eventres.djhtml', base)
 # }}}
+
+# {{{ event stats view
+@cache_page
+def event_stats(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    base = base_ctx('Results', 'By Event', request)
+    base["event"] = event
+
+    matches = event.get_matchset()
+
+    winners = Counter()
+    losers = Counter()
+
+    game_for = Counter()
+    game_against = Counter()
+
+    pm = Counter()
+
+    for m in matches:
+        winners[m.get_winner()] += 1
+        losers[m.get_loser()] += 1
+
+        game_for[m.pla] += m.sca
+        game_for[m.plb] += m.scb
+        game_against[m.pla] += m.scb
+        game_against[m.plb] += m.sca
+
+        pm[m.pla] += m.sca - m.scb
+        pm[m.plb] += m.scb - m.sca
+
+#    pm = [(p, game_for[p] - game_against[p]) for p in game_for]
+
+#    pm.sort(key=lambda t: t[1])
+
+    print(winners)
+    print(losers)
+    print(pm)
+
+    base["winners"] = winners.most_common(10)
+    base["losers"] = losers.most_common(10)
+    base["pm"] = pm.most_common(10)
+
+    return render_to_response('eventstats.djhtml', base)
+# }}}
+
 
 # {{{ search view
 @cache_login_protect

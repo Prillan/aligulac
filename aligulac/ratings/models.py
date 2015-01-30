@@ -1648,6 +1648,24 @@ class Match(models.Model):
         return None
     # }}}
 
+    # {{{ get_loser: Returns the loser of this match, or None if tie.
+    def get_loser(self):
+        if self.sca < self.scb:
+            return self.pla
+        elif self.scb < self.sca:
+            return self.plb
+        return None
+    # }}}
+
+    # {{{ get_loser_id
+    def get_loser_id(self):
+        if self.sca < self.scb:
+            return self.pla_id
+        elif self.scb < self.sca:
+            return self.plb_id
+        return None
+    # }}}
+
     # {{{ get_winner_score: Returns the score of the winner.
     def get_winner_score(self):
         return max(self.sca, self.scb)

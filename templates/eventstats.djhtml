@@ -1,0 +1,60 @@
+{% extends "index.djhtml" %}
+
+{% comment %}
+This template shows the stats for an event. (Not the event overview page.) It's called from
+ratings.views.events.
+{% endcomment %}
+
+{% load ratings_extras %}
+{% load humanize %}
+{% load formulation %}
+{% load i18n %}
+
+{% block title %}{{ event }}{% endblock %}
+
+{% block jsapps %}eventstats{% endblock %}
+{% block postscript %}
+{% endblock %}
+
+{% block content %}
+<h2>Player stats for {{ event }}</h2>
+<div class="row">
+  <div class="col-lg-4 col-md-4 col-sm-5">
+    <h3>{% trans "Winners" %}</h3>
+    <div class="table-responsive">
+      <table class="table">
+        {% for p, count in winners %}
+        <tr>
+          <td>{{ p }}</td><td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-4 col-sm-5">
+    <h3>{% trans "Losers" %}</h3>
+    <div class="table-responsive">
+      <table class="table">
+        {% for p, count in losers %}
+        <tr>
+          <td>{{ p }}</td><td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-4 col-sm-5">
+    <h3>+/-</h3>
+    <div class="table-responsive">
+      <table class="table">
+        {% for p, count in pm %}
+        <tr>
+          <td>{{ p }}</td><td>{% if count > 0 %}+{% endif %}{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

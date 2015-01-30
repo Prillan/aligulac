@@ -81,6 +81,7 @@ urlpatterns = patterns('',
     url(r'^results/$', 'ratings.results_views.results'),
     url(r'^results/events/$', 'ratings.results_views.events'),
     url(r'^results/events/(?P<event_id>\d+)(-[^ /]*)?/$', 'ratings.results_views.events'),
+    url(r'^results/events/(?P<event_id>\d+)(-[^ /]*)?/stats/$', 'ratings.results_views.event_stats'),
     url(r'^results/search/$', 'ratings.results_views.search'),
 
     url(r'^records/race/$', 'ratings.records_views.race'),
